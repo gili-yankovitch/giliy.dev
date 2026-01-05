@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⦿ giliy.dev - Gili Yankovitch ⦿</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --dark-bg: #0a0a1a;
+            --darker-bg: #050510;
+            --text-glow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+            --box-glow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue), inset 0 0 5px rgba(0, 243, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--darker-bg);
+            background-image: 
+                radial-gradient(ellipse at center, var(--dark-bg) 0%, var(--darker-bg) 100%),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 243, 255, 0.03) 2px,
+                    rgba(0, 243, 255, 0.03) 4px
+                );
+            color: var(--neon-blue);
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border: 2px solid var(--neon-blue);
+            box-shadow: var(--box-glow);
+            margin-bottom: 30px;
+            background: rgba(0, 243, 255, 0.05);
+            position: relative;
+        }
+
+        .header::before {
+            content: ">>> SECURE CONNECTION ESTABLISHED <<<";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--neon-green);
+            animation: flicker 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2rem;
+            text-shadow: var(--text-glow);
+            margin-bottom: 10px;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: var(--text-glow);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+
+        .subtitle {
+            color: var(--neon-pink);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .divider {
+            text-align: center;
+            color: var(--neon-blue);
+            margin: 30px 0;
+            font-size: 1.5rem;
+            text-shadow: var(--text-glow);
+            letter-spacing: 5px;
+        }
+
+        .section {
+            border: 1px solid var(--neon-blue);
+            padding: 20px;
+            margin-bottom: 25px;
+            background: rgba(0, 243, 255, 0.02);
+            box-shadow: var(--box-glow);
+            position: relative;
+        }
+
+        .section::before {
+            content: attr(data-section);
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--darker-bg);
+            padding: 0 10px;
+            color: var(--neon-pink);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            color: var(--neon-blue);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            text-shadow: var(--text-glow);
+        }
+
+        h3 {
+            color: var(--neon-green);
+            margin: 15px 0 10px;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        a {
+            color: var(--neon-pink);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        a:hover {
+            color: var(--neon-blue);
+            text-shadow: var(--text-glow);
+        }
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 5px 0;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .project-card {
+            border: 1px solid var(--neon-blue);
+            padding: 15px;
+            background: rgba(0, 243, 255, 0.03);
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: var(--box-glow);
+            transform: translateY(-3px);
+        }
+
+        .project-name {
+            color: var(--neon-pink);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .project-lang {
+            color: var(--neon-green);
+            font-size: 0.9rem;
+        }
+
+        .project-stars {
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skill-tag {
+            border: 1px solid var(--neon-blue);
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .ascii-art {
+            font-size: 0.6rem;
+            line-height: 1.2;
+            color: var(--neon-blue);
+            text-shadow: var(--text-glow);
+            white-space: pre;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid var(--neon-blue);
+            margin-top: 30px;
+        }
+
+        .visitor-counter {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            background: #000;
+            padding: 5px 15px;
+            border: 2px inset #333;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            background: rgba(0, 243, 255, 0.1);
+            padding: 10px;
+            margin: 20px 0;
+            border: 1px solid var(--neon-blue);
+        }
+
+        .marquee span {
+            display: inline-block;
+            animation: marquee 15s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .blinking-cursor::after {
+            content: "█";
+            animation: blink 1s infinite;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.03;
+        }
+
+        .fun-fact {
+            border-left: 3px solid var(--neon-pink);
+            padding-left: 15px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .testimonial {
+            background: rgba(255, 0, 255, 0.05);
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-left: 2px solid var(--neon-pink);
+        }
+
+        .testimonial-author {
+            color: var(--neon-green);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            .header::before {
+                font-size: 0.6rem;
+            }
+            .ascii-art {
+                font-size: 0.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="ascii-art">
+   ██████╗ ██╗██╗     ██╗██╗   ██╗   ██████╗ ███████╗██╗   ██╗
+  ██╔════╝ ██║██║     ██║╚██╗ ██╔╝   ██╔══██╗██╔════╝██║   ██║
+  ██║  ███╗██║██║     ██║ ╚████╔╝    ██║  ██║█████╗  ██║   ██║
+  ██║   ██║██║██║     ██║  ╚██╔╝     ██║  ██║██╔══╝  ╚██╗ ██╔╝
+  ╚██████╔╝██║███████╗██║   ██║  ██╗ ██████╔╝███████╗ ╚████╔╝ 
+   ╚═════╝ ╚═╝╚══════╝╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝  ╚═══╝  
+            </div>
+            <p class="subtitle">[ Embedded Security Expert | Cryptographer | Maker | D&D DM ]</p>
+        </header>
+
+        <div class="divider">═══════════════════════════════</div>
+
+        <section class="section" data-section="//whoami">
+            <h2>>> ABOUT </h2>
+            <div class="status-line">
+                <span class="status-indicator"></span>
+                <span>Status: <span style="color: var(--neon-green);">ONLINE</span> from Tel-Aviv, Israel</span>
+            </div>
+            <p style="margin-top: 15px;">
+                Greetings, traveler! I'm <strong style="color: var(--neon-pink);">Gili Yankovitch</strong> — 
+                an embedded systems hacker, cryptography enthusiast, and all-around security nerd.
+            </p>
+            <p style="margin-top: 10px;">
+                🔒 <strong>Founder @ <a href="https://www.nyxsecuritysolutions.com/">Nyx Security Solutions</a></strong><br>
+                🔒 Former Founder @ Cymplify Security <em>(Acquired by Check Point)</em><br>
+                🎲 Dungeon Master @ <a href="https://nat20.io">nat20.io</a>
+            </p>
+            <div class="fun-fact">
+                "I break embedded systems for a living, then teach others how to build them right. 
+                Also, I roll natural 20s. A lot."
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════</div>
+
+        <section class="section" data-section="//services">
+            <h2>>> WHAT I DO </h2>
+            <h3>⦿ Embedded Penetration Testing</h3>
+            <p>Vulnerability research & pen testing for embedded devices. I find the bugs before the bad guys do.</p>
+            
+            <h3>⦿ Secure Hardware Design</h3>
+            <p>Trusted, high-assurance hardware security meeting NIST, CRA, RED, NIS2 compliance.</p>
+            
+            <h3>⦿ Secure Embedded Development</h3>
+            <p>Building robust, industry-standard embedded systems that don't crumble under attack.</p>
+            
+            <h3>⦿ Cryptographic System Design</h3>
+            <p>Innovative crypto solutions for secure, high-assurance systems. Math is my weapon.</p>
+        </section>
+
+        <div class="divider">═══════════════════════════════</div>
+
+        <section class="section" data-section="//projects">
+            <h2>>> FEATURED PROJECTS</h2>
+            <p style="margin-bottom: 15px;">Open source stuff I've built. Available on <a href="https://github.com/gili-yankovitch">GitHub</a>.</p>
+            
+            <div class="projects-grid">
+                <a href="https://swordofsecrets.com" class="project-card">
+                    <div class="project-name">⚔️ SwordOfSecrets</div>
+                    <div class="project-lang">[C]</div>
+                    <p>Hardware security sword with hidden secrets</p>
+                    <div class="project-stars">★ 22</div>
+                </a>
+                
+                <a href="https://github.com/gili-yankovitch/OneBtn" class="project-card">
+                    <div class="project-name">🔘 OneBtn</div>
+                    <div class="project-lang">[C++]</div>
+                    <p>The simplest interface — one button to rule them all</p>
+                </a>
+                
+                <a href="https://github.com/gili-yankovitch/paws-module" class="project-card">
+                    <div class="project-name">🐾 Paws-module</div>
+                    <div class="project-lang">[C++]</div>
+                    <p>ATTiny85 Smart Key Switch Module</p>
+                    <div class="project-stars">★ 16</div>
+                </a>
+                
+                <a href="https://github.com/gili-yankovitch/TinyPad" class="project-card">
+                    <div class="project-name">📱 TinyPad</div>
+                    <div class="project-lang">[C++]</div>
+                    <p>Compact programmable input device</p>
+                </a>
+                
+                <a href="https://github.com/gili-yankovitch/CryptoKit" class="project-card">
+                    <div class="project-name">🔐 CryptoKit</div>
+                    <div class="project-lang">[C]</div>
+                    <p>Cryptographic toolkit for embedded systems</p>
+                </a>
+                
+                <a href="https://nat20.io" class="project-card">
+                    <div class="project-name">🎲 nat20.io</div>
+                    <div class="project-lang">[Web]</div>
+                    <p>D&D tools for Dungeon Masters</p>
+                </a>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════</div>
+
+        <section class="section" data-section="//contact">
+            <h2>>> CONNECT WITH ME</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <span>🐦</span>
+                    <a href="https://twitter.com/GiliYankovitch">@GiliYankovitch</a>
+                </div>
+                <div class="contact-item">
+                    <span>💼</span>
+                    <a href="https://linkedin.com/in/yankovitchgil">LinkedIn</a>
+                </div>
+                <div class="contact-item">
+                    <span>🐙</span>
+                    <a href="https://github.com/gili-yankovitch">GitHub</a>
+                </div>
+                <div class="contact-item">
+                    <span>🦋</span>
+                    <a href="https://bsky.app/profile/giliy.dev">Bluesky</a>
+                </div>
+                <div class="contact-item">
+                    <span>🏢</span>
+                    <a href="https://www.nyxsecuritysolutions.com/">Nyx Security</a>
+                </div>
+                <div class="contact-item">
+                    <span>🎲</span>
+                    <a href="https://nat20.io">nat20.io</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider">═══════════════════════════════</div>
+
+        <section class="section" data-section="//random">
+            <h2>>> FUN FACTS</h2>
+            <ul style="list-style-type: none;">
+                <li>🎲 I run D&D campaigns — TPKs happen, it's part of the fun</li>
+                <li>🔮 Favorite color: <span style="color: var(--neon-blue); text-shadow: var(--text-glow);">#00f3ff</span> (obviously)</li>
+                <li>☕ Coffee consumption: Critical for operation</li>
+                <li>🛠️ I solder things that probably shouldn't be soldered</li>
+                <li>📖 Life goal: Fabricate my own chip, the size in nm DOES NOT MATTER</li>
+            </ul>
+        </section>
+
+        <footer class="footer">
+            <div class="ascii-art">
+    ╔══════════════════════════════════════════╗
+    ║  "Break things. Learn things. Build      ║
+    ║   things that are harder to break."      ║
+    ╚══════════════════════════════════════════╝
+            </div>
+            <p style="margin-top: 20px;">
+                <span class="blinking-cursor">root@giliy.dev:~$ </span>
+            </p>
+            <div class="visitor-counter">
+                VISITORS: 1337
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
+                © 2015-2026 Gili Yankovitch | Made with ❤️ and too much caffeine
+            </p>
+            <p style="font-size: 0.8rem; color: #444; margin-top: 10px;">
+                Best viewed with Netscape Navigator 4.0 at 800x600
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Add some 90s authenticity with a console easter egg
+        console.log(`
+    ╔══════════════════════════════════════════════════════╗
+    ║                                                      ║
+    ║   🔐 You found the secret console message! 🔐        ║
+    ║                                                      ║
+    ║   "The quieter you become, the more you can hear."   ║
+    ║                                                      ║
+    ║   Looking for vulnerabilities? I like you already.   ║
+    ║   Send your findings to: giliy@nyxsecurity.net       ║
+    ║                                                      ║
+    ╚══════════════════════════════════════════════════════╝
+        `);
+
+        // Fake visitor counter that updates
+        const counter = document.querySelector('.visitor-counter');
+        if (counter) {
+            const baseVisitors = 1337;
+            const randomAdd = Math.floor(Math.random() * 100);
+            counter.textContent = `VISITORS: ${baseVisitors + randomAdd}`;
+        }
+    </script>
+</body>
+</html>
+

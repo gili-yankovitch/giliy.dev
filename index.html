@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -308,6 +309,18 @@
             animation: blink 1s infinite;
         }
 
+        /* hidden easter-egg command in the footer terminal */
+        .secret-cmd {
+            color: #14323a;            /* nearly invisible against the dark bg */
+            text-decoration: none;
+            transition: color 0.25s, text-shadow 0.25s;
+            cursor: pointer;
+        }
+        .secret-cmd:hover {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
         .matrix-bg {
             position: fixed;
             top: 0;
@@ -526,7 +539,8 @@
     ╚══════════════════════════════════════════╝
             </div>
             <p style="margin-top: 20px;">
-                <span class="blinking-cursor">root@giliy.dev:~$ </span>
+                <span style="color: var(--neon-green);">root@giliy.dev:~$</span>
+                <a href="game.html" class="secret-cmd" title="...what's this?">./office_quest.sh</a><span class="blinking-cursor"></span>
             </p>
             <div class="visitor-counter">
                 VISITORS: 1337
@@ -548,9 +562,6 @@
     ║   🔐 You found the secret console message! 🔐        ║
     ║                                                      ║
     ║   "The quieter you become, the more you can hear."   ║
-    ║                                                      ║
-    ║   Looking for vulnerabilities? I like you already.   ║
-    ║   Send your findings to: giliy@nyxsecurity.net       ║
     ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
         `);
@@ -580,9 +591,13 @@
             
             // Spaceships
             const spaceships = [];
-            const maxSpaceships = 1;
-            const spawnChance = 0.003; // Chance per frame to spawn a new ship
-            
+            const maxSpaceships = 3;
+            const spawnChance = 0.008; // Chance per frame to spawn a new ship
+
+            // Minigame: clicking makes the nearest ship fire; first asteroid hit explodes
+            const lasers = [];
+            const explosions = [];
+
             function Spaceship() {
                 // Spawn from edges
                 const side = Math.floor(Math.random() * 4);
@@ -745,7 +760,114 @@
             function drawSpaceships() {
                 spaceships.forEach(ship => ship.draw());
             }
-            
+
+            // ---- Minigame: fire from the ship nearest the click ----
+            function fireFromNearestShip(tx, ty) {
+                // find the closest spaceship to the click; if none are around, scramble one
+                let ship = null, best = Infinity;
+                for (const s of spaceships) {
+                    const d = (s.x - tx) * (s.x - tx) + (s.y - ty) * (s.y - ty);
+                    if (d < best) { best = d; ship = s; }
+                }
+                if (!ship) { ship = new Spaceship(); spaceships.push(ship); }
+
+                const ang = Math.atan2(ty - ship.y, tx - ship.x);
+                const speed = 12;
+                lasers.push({
+                    x: ship.x, y: ship.y,
+                    vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
+                    color: ship.color, life: 220
+                });
+                // muzzle flash + the ship perks up
+                explosions.push({ x: ship.x, y: ship.y, t: 0, maxT: 9, color: ship.color, flash: true, r: ship.size });
+                ship.engineFlicker = 1;
+            }
+
+            function updateLasers() {
+                for (let i = lasers.length - 1; i >= 0; i--) {
+                    const L = lasers[i];
+                    L.x += L.vx; L.y += L.vy; L.life--;
+                    let hit = false;
+                    // the FIRST asteroid the bolt touches explodes
+                    for (let j = 0; j < particles.length; j++) {
+                        const p = particles[j];
+                        const r = p.size * 3 + 5;
+                        const dx = p.x - L.x, dy = p.y - L.y;
+                        if (dx * dx + dy * dy < r * r) {
+                            explosions.push({ x: p.x, y: p.y, t: 0, maxT: 34, color: p.color });
+                            particles.splice(j, 1);
+                            particles.push(new Particle()); // respawn one to keep the field full
+                            hit = true;
+                            break;
+                        }
+                    }
+                    if (hit || L.life <= 0 || L.x < -30 || L.x > width + 30 || L.y < -30 || L.y > height + 30) {
+                        lasers.splice(i, 1);
+                    }
+                }
+            }
+
+            function drawLasers() {
+                lasers.forEach(L => {
+                    ctx.save();
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = L.color + '1)';
+                    ctx.strokeStyle = L.color + '0.95)';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.moveTo(L.x, L.y);
+                    ctx.lineTo(L.x - L.vx * 1.8, L.y - L.vy * 1.8); // short bright trail
+                    ctx.stroke();
+                    ctx.restore();
+                });
+            }
+
+            function updateExplosions() {
+                for (let i = explosions.length - 1; i >= 0; i--) {
+                    if (++explosions[i].t > explosions[i].maxT) explosions.splice(i, 1);
+                }
+            }
+
+            function drawExplosions() {
+                explosions.forEach(e => {
+                    const prog = e.t / e.maxT;
+                    ctx.save();
+                    if (e.flash) { // muzzle flash
+                        ctx.globalAlpha = 1 - prog;
+                        ctx.fillStyle = e.color + '0.8)';
+                        ctx.beginPath();
+                        ctx.arc(e.x, e.y, e.r * (0.4 + prog), 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                        return;
+                    }
+                    // asteroid explosion: shockwave ring + bright core + flying debris
+                    ctx.shadowBlur = 14; ctx.shadowColor = e.color + '1)';
+                    ctx.globalAlpha = 1 - prog;
+                    ctx.strokeStyle = e.color + '1)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(e.x, e.y, 4 + prog * 36, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    ctx.globalAlpha = (1 - prog) * 0.9;
+                    ctx.fillStyle = e.color + '1)';
+                    ctx.beginPath();
+                    ctx.arc(e.x, e.y, (1 - prog) * 11, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.globalAlpha = 1 - prog;
+                    for (let k = 0; k < 9; k++) {
+                        const a = (Math.PI * 2 / 9) * k + e.t * 0.04;
+                        const dist = prog * 32;
+                        const sx = e.x + Math.cos(a) * dist;
+                        const sy = e.y + Math.sin(a) * dist;
+                        ctx.fillRect(sx - 1.5, sy - 1.5, 3, 3);
+                    }
+                    ctx.restore();
+                });
+            }
+
             function resize() {
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
@@ -890,7 +1012,13 @@
                 // Update and draw spaceships
                 updateSpaceships();
                 drawSpaceships();
-                
+
+                // Minigame: lasers + explosions
+                updateLasers();
+                drawLasers();
+                updateExplosions();
+                drawExplosions();
+
                 requestAnimationFrame(animate);
             }
             
@@ -903,6 +1031,12 @@
                 });
             });
             
+            // Clicks anywhere on the page tell the nearest ship to open fire.
+            // (Doesn't preventDefault, so links/buttons keep working.)
+            window.addEventListener('click', (ev) => {
+                fireFromNearestShip(ev.clientX, ev.clientY);
+            });
+
             init();
             animate();
         })();

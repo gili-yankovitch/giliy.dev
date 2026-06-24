@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⦿ OFFICE QUEST — a giliy.dev side-project ⦿</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game/game.css">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { overflow-x: hidden; }
+        body {
+            background: #030308;
+            color: var(--neon-blue);
+            font-family: 'VT323', monospace;
+            min-height: 100vh;
+        }
+        /* CRT scanlines over everything (matches the main site vibe) */
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg, rgba(0,0,0,0.16), rgba(0,0,0,0.16) 1px, transparent 1px, transparent 2px);
+        }
+        /* gives the page height so scrolling pans the office map */
+        .oq-spacer { height: 300vh; pointer-events: none; }
+
+        .oq-backlink {
+            position: fixed; top: 12px; left: 14px; z-index: 1550;
+            font-family: 'Press Start 2P', cursive; font-size: 0.55rem;
+            color: var(--neon-pink); text-decoration: none;
+            border: 1px solid var(--neon-pink); padding: 8px 12px;
+            background: rgba(8,10,24,0.8); box-shadow: 0 0 8px rgba(255,0,255,0.4);
+            pointer-events: auto;
+        }
+        .oq-backlink:hover { color: var(--neon-blue); border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+        .oq-title {
+            position: fixed; top: 12px; right: 14px; z-index: 1550;
+            font-family: 'Press Start 2P', cursive; font-size: 0.55rem;
+            color: var(--neon-green); text-shadow: 0 0 8px var(--neon-green);
+            pointer-events: none; text-align: right;
+        }
+        @media (max-width: 640px) { .oq-title { display: none; } }
+    </style>
+</head>
+<body>
+    <a class="oq-backlink" href="index.html">&lt; back to giliy.dev</a>
+    <div class="oq-title">OFFICE QUEST<br><span style="color:var(--neon-blue);font-size:0.5rem;">scroll to explore the office</span></div>
+
+    <!-- the engine injects the canvas + HUD; this spacer just makes the page scrollable -->
+    <div class="oq-spacer"></div>
+
+    <script src="game/sprites.js"></script>
+    <script src="game/world.js"></script>
+    <script src="game/engine.js"></script>
+</body>
+</html>

@@ -32,7 +32,7 @@
     wood:  '#a9763f', woodD: '#7a4f24',
     steel: '#8a93a6', steelD:'#5b6273',
     purple:'#9a6cff',
-    floorA:'#1d2236', floorB:'#222a44', floorEdge:'#2f3a5e',
+    floorA:'#0c0e1a', floorB:'#0f1322', floorEdge:'#1a2138',
     wall:  '#272f4e', wallTop:'#39456f',
   };
   OQ.C = C;
@@ -407,11 +407,11 @@
         const x = sx + offset;
         const ci = Math.round((x) / hw);
         const fill = ((ci + k) & 1) ? C.floorA : C.floorB;
-        isoDiamond(ctx, x, sy, TILE_W, TILE_H, fill, 'rgba(0,243,255,0.045)');
-        // sparse deterministic detail so the floor isn't flat & empty
+        isoDiamond(ctx, x, sy, TILE_W, TILE_H, fill, 'rgba(0,243,255,0.025)');
+        // sparse deterministic detail so the floor isn't flat & empty (kept subtle/dark)
         const h = ((ci * 73856093) ^ (k * 19349663)) >>> 0;
-        if (h % 23 === 0) isoDiamond(ctx, x, sy, TILE_W * 0.32, TILE_H * 0.32, 'rgba(0,243,255,0.10)', null);
-        else if (h % 37 === 0) isoDiamond(ctx, x, sy, TILE_W * 0.5, TILE_H * 0.5, 'rgba(255,0,255,0.05)', null);
+        if (h % 23 === 0) isoDiamond(ctx, x, sy, TILE_W * 0.32, TILE_H * 0.32, 'rgba(0,243,255,0.06)', null);
+        else if (h % 37 === 0) isoDiamond(ctx, x, sy, TILE_W * 0.5, TILE_H * 0.5, 'rgba(255,0,255,0.035)', null);
       }
     }
     ctx.restore();

@@ -361,7 +361,7 @@
   // ---------- rendering ----------
   function bgGradient(m) {
     const grd = ctx.createLinearGradient(0, 0, 0, m.vh);
-    grd.addColorStop(0, '#0a0c1c'); grd.addColorStop(1, '#050510');
+    grd.addColorStop(0, '#06070f'); grd.addColorStop(1, '#030308');
     ctx.fillStyle = grd; ctx.fillRect(0, 0, m.vw, m.vh);
   }
   function drawIconAt(id, sx, sy, s) {

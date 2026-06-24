@@ -317,22 +317,21 @@
       p(2, 1, 12, 8, C.dark); p(3, 2, 10, 6, C.green); p(3, 2, 10, 1.5, '#a8ff9b'); // monitor
       p(7, 9, 2, 3, C.gray);
     },
-    // a colleague seated at a desk, gently "typing" — populates the open plan
+    // a colleague at a desk, gently "typing" — populates the open plan
     worker_desk(ctx, cx, by, s) {
       const i = (Math.abs(Math.round(cx)) * 2654435761) >>> 0;
       const col = WORKER_COLS[i % WORKER_COLS.length];
       const typing = (Math.sin(performance.now() / 320 + (i % 9)) > 0.25) ? 1 : 0;
-      const face = (i & 2) ? 1 : -1;
-      // seated worker BEHIND the desk; desk + monitor (drawn after) occlude the legs/torso
-      // so the head/shoulders clearly poke above the monitor.
-      drawPerson(ctx, cx, by - 7 * s, s * 0.9, col, typing, face);
+      const side = (i & 2) ? 1 : -1;
+      // desk + monitor
       shadow(ctx, cx, by, 20 * s, 6 * s);
       drawIsoBoxSimple(ctx, cx, by, 20 * s, 10 * s, 8 * s, '#7a5230', C.woodD, '#6b4828');
       const p = makePx(ctx, cx - 8 * s, by - 8 * s - 12 * s, s);
       const screens = [C.green, C.blue, C.pink, C.yel];
       const sc = screens[i % screens.length];
-      p(2, 1, 12, 8, C.dark); p(3, 2, 10, 6, sc); p(3, 2, 10, 1.5, '#ffffff'); // monitor (back to us)
-      p(7, 9, 2, 3, C.gray);
+      p(2, 1, 12, 8, C.dark); p(3, 2, 10, 6, sc); p(3, 2, 10, 1.5, '#ffffff'); p(7, 9, 2, 3, C.gray);
+      // colleague standing AT the desk (fully visible, to one side, facing the screen)
+      drawPerson(ctx, cx + side * 12 * s, by - 1 * s, s * 0.95, col, typing, -side);
     },
     glass_wall(ctx, cx, by, s, len) {
       // a run of glass partition; len in art px

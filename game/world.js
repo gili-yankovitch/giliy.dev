@@ -68,6 +68,56 @@
     edge.forEach(([prop, anchor, dx, band]) => push(prop, anchor, dx, band));
   })();
 
+  // ---- shared pool of absurd things colleagues say when you talk to them ----
+  //      (AI / cybersecurity / corporate / dev-life). Each NPC also keeps its
+  //      own character lines and draws from this big pool for variety.
+  const NPC_JOKES = [
+    // --- AI ---
+    "We replaced code review with AI. Now the bugs ship with really confident vibes.",
+    "I asked the AI to fix the bug. It apologized, agreed with me, and changed nothing. Very senior.",
+    "Management wants us 'AI-first'. I wanted coffee-first. We compromised — the AI makes the coffee now. It's terrible.",
+    "The chatbot we shipped gained sentience, read the backlog, and immediately put in its two weeks.",
+    "We're not using AI to replace engineers. Just the engineers who said we wouldn't.",
+    "Prompt engineering is just begging, but with a job title.",
+    "Our AI meeting-summarizer condensed the layoffs memo to 'exciting growth ahead'. Eerily accurate.",
+    "I fine-tuned a model on our codebase. Now it only outputs TODO comments and quiet judgment.",
+    "We added RAG, agents, AND fine-tuning. The app now tells customers the wrong price, but instantly.",
+    "Copilot wrote 90% of this feature. I'm here for the 10% that decides which 90% to delete.",
+    // --- cybersecurity ---
+    "New password policy: one number, one symbol, and one single tear of genuine despair.",
+    "We passed the security audit by turning off the part that kept failing it.",
+    "Someone clicked the phishing test again. It was me. I write the phishing tests.",
+    "Zero Trust means I don't trust the network, the users, or — increasingly — myself.",
+    "We encrypted everything. Including the keys. We are now extremely secure and completely locked out.",
+    "Pentesters got domain admin in nine minutes. We gave them a certificate. For participation.",
+    "Our incident response plan is a Slack channel called 'oh-no' and a great deal of hope.",
+    "I rotated the secrets... into a public repo. They are VERY rotated now.",
+    "We're SOC 2 compliant — which means we own a PDF that firmly states we are.",
+    "We put MFA on the coffee machine. I haven't had caffeine since Tuesday but it's very secure.",
+    "The breach wasn't us, it was a 'sophisticated nation-state actor'. The actor was an intern. Again.",
+    // --- corporate ---
+    "We don't do layoffs here. We do 'a strategic reduction in keyboards'.",
+    "Q3 goal was 'synergize the paradigm'. Q4 goal is figuring out what Q3 meant.",
+    "They took the free snacks but gave us a 'culture of ownership'. I now proudly own my own hunger.",
+    "We're a flat hierarchy — everyone's equal — except the org chart, which is somehow four-dimensional.",
+    "HR sent a survey asking if we're happy. It was not anonymous. We are, overwhelmingly, thrilled.",
+    "The all-hands had a slide titled 'Doing More With Less'. Turns out we were the 'less'.",
+    "We have unlimited PTO, which is corporate for 'zero PTO, but legally clever'.",
+    "Got promoted on 'impact, leadership, and being in the room when the VP felt a feeling'.",
+    "Mission statement changed again. We now 'empower synergies at the edge of possible'. I sell databases.",
+    // --- dev life ---
+    "It works on my machine, so we're shipping my machine. Logistics is sorting out the delivery.",
+    "I fixed one bug and three more showed up to attend the funeral.",
+    "I estimated two days. It has now been two days, four separate times.",
+    "We hit 100% test coverage. None of the tests assert anything, but the number is beautiful.",
+    "It's not legacy code, it's 'heritage code'. It's protected by law now.",
+    "Staging is just production wearing a fake mustache and hoping no one asks questions.",
+    "We went serverless. The servers are still there — we're just not allowed to look at them.",
+    "Microservices turned my one bug into forty bugs in a trench coat, arguing over the network.",
+    "I named a variable 'temp' in 2019. It is now load-bearing. The whole platform rests on temp.",
+    "Tech debt? We refinanced it into a bigger framework. Same debt, exciting new vocabulary.",
+  ];
+
   // ---- items (mobile) — appear on the map until collected ----------------
   // ---- props (stationary) — interactable but never picked up -------------
   // ---- npcs --------------------------------------------------------------
@@ -173,13 +223,13 @@
       onInteract(g){ OQ.talkToManager(g); } },
     { id:'devA', name:'a colleague', kind:'npc', col:'dev1', cluster:'duck_desk', dx:34, dy:10, s:3.2, w:42, h:74, verb:'Talk to',
       look:"A coworker wearing noise-cancelling headphones that cancel everything except me.",
-      onInteract(g){ g.say('devA', g.pick(["Don't talk to me, I'm in a flow state. ...okay I lost it.","Have you seen the duck? The DUCK. I can't debug without the duck.","If anyone asks, I'm 'in a meeting'."])); } },
+      onInteract(g){ g.say('devA', g.pick(["Don't talk to me, I'm in a flow state. ...okay I lost it.","Have you seen the duck? The DUCK. I can't debug without the duck.","If anyone asks, I'm 'in a meeting'."].concat(NPC_JOKES))); } },
     { id:'devB', name:'another colleague', kind:'npc', col:'dev2', cluster:'desk_b', dx:0, dy:6, s:3.2, w:42, h:74, verb:'Talk to',
       look:"Has eleven monitors and uses exactly one of them, for solitaire.",
-      onInteract(g){ g.say('devB', g.pick(["Standup was 3 hours. We discussed standups.","I haven't pushed code since the merge incident. We don't talk about the merge incident.","Is it Friday? It's never Friday."])); } },
+      onInteract(g){ g.say('devB', g.pick(["Standup was 3 hours. We discussed standups.","I haven't pushed code since the merge incident. We don't talk about the merge incident.","Is it Friday? It's never Friday."].concat(NPC_JOKES))); } },
     { id:'devC', name:'yet another colleague', kind:'npc', col:'dev3', cluster:'desk_c', dx:0, dy:6, s:3.2, w:42, h:74, verb:'Talk to',
       look:"Speaks exclusively in acronyms. Even their lunch order is an acronym.",
-      onInteract(g){ g.say('devC', g.pick(["Per my last Slack, re: the EOD ETA on the POC — circle back?","I rebased and now time itself has a merge conflict.","We're agile. So agile we never actually ship."])); } },
+      onInteract(g){ g.say('devC', g.pick(["Per my last Slack, re: the EOD ETA on the POC — circle back?","I rebased and now time itself has a merge conflict.","We're agile. So agile we never actually ship."].concat(NPC_JOKES))); } },
   ];
 
   // ---- USE combinations: "source>target" -> handler(g) returns true ------

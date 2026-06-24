@@ -420,11 +420,7 @@
       }
     }
 
-    // dim the content column so the map is faint there, vivid in margins
-    ctx.fillStyle = 'rgba(5,6,18,0.6)';
-    ctx.fillRect(m.colLeft, 0, m.colW, m.vh);
-
-    // held item follows cursor (only meaningful over the canvas/margins)
+    // held item follows cursor
     if (held && mouse.onCanvas) drawIconAt(held, mouse.x, mouse.y, 3);
 
     // hover ring on interactable

@@ -33,8 +33,8 @@ absurd, independent solution paths exist; completing **any one** wins the stage.
 
 | Topic | Decision |
 |---|---|
-| Visibility | **Always-on background.** The game renders behind everything, full-strength in the margins, faint (dimmed) behind the centered 800px content column. |
-| Interaction zone | **Play in the margins.** Important interactables live in the left/right margin strips and the gaps between content. Content panels are *opaque to the game* — clicking them never reaches the game (that's the "not interactive behind content" rule). |
+| Hosting | **Standalone full-screen page** (`game.html`), linked from the main site as an **easter egg** (a near-invisible `./office_quest.sh` link in the footer terminal prompt + a `launchQuest()` console hint). The main `index.html` is the plain portfolio again — no game canvas. |
+| Layout | **Full-screen.** The whole viewport is the office floor; interactive rooms are spread across the entire width (left/center/right) and the vertical scroll. A generated open-plan desk grid + edge props keep every scroll position populated. |
 | Art | **Hand-authored pixel sprites** (color-indexed char grids) + procedural isometric boxes, rendered to a `<canvas>` with nearest-neighbor scaling. No external assets. |
 | Code | **Split modules** in `game/`, loaded as plain (non-module) scripts attaching to `window.OfficeQuest`. Works over `file://` and `http://`. |
 | Persistence | Progress + inventory + flags saved to `localStorage` (`officequest.save.v1`) so it "evolves over time" and survives reloads. |
@@ -45,6 +45,8 @@ absurd, independent solution paths exist; completing **any one** wins the stage.
 ## 3. File layout
 
 ```
+game.html       ← standalone full-screen game page (loads the scripts below)
+index.html      ← the portfolio; links the game as a footer easter egg
 game/
   DESIGN.md     ← this file (the iterable spec)
   game.css      ← canvas layering, inventory bar, speech bubbles, cursor, victory overlay
@@ -61,21 +63,18 @@ then the engine boots on `DOMContentLoaded`.
 
 ## 4. Engine architecture (`engine.js`)
 
-### 4.1 Layering & "play in the margins"
-- `#oq-canvas` — `position:fixed; inset:0;` full viewport, `z-index:1`, `pointer-events:auto`.
-- `.container` (site content) — `z-index:2`, **`pointer-events:none`** so clicks in the empty
-  gaps fall *through* to the canvas, while `.section`/`a`/interactive children re-enable
-  `pointer-events:auto` so they capture clicks (and thus block the game) — exactly the
-  "behind content = not interactive" behavior.
-- The canvas dims whatever it draws under the content column by overpainting a translucent
-  vignette aligned to the centered 800px column, so the map is faint there and vivid in margins.
-- The CRT scanline overlay (`body::before`, z-index 1000) stays on top of everything for flavor.
+### 4.1 Layering (full-screen page)
+- `#oq-canvas` — `position:fixed; inset:0;` full viewport, `z-index:1`, `pointer-events:auto`. The
+  whole screen is the game; clicks land on the canvas (HUD elements at higher z-index handle their
+  own clicks). The CRT scanline overlay (`body::before`, z-index 1000) sits on top for flavor.
+- `game.html` contains only a `.oq-spacer` (height `300vh`) so the page is scrollable; the engine
+  injects the canvas + HUD. A small back-link and title sit at z-index 1550.
 
 ### 4.2 Camera / scroll
-The world is taller than the viewport. `camera.y = window.scrollY`, so **scrolling the page pans
-the map down** — "the map extends as long as the page scrolls." World vertical bands are placed
-by *normalized* position (0..1) mapped onto the document's scrollable height, computed at runtime
-and on resize, so the map always spans the full page length regardless of content height.
+The page is `300vh` tall (the spacer), so `camera.y = window.scrollY` **pans the office map** as you
+scroll. World vertical bands are *normalized* (0..1) and mapped onto the document's scrollable
+height at runtime, so the map always spans the full page. Desk rows are evenly spaced across the
+bands so no scroll position lands on empty floor.
 
 ### 4.3 Coordinate systems
 - **World pixels**: `(wx, wy)`. `screen = world - camera` (camera.x is 0).

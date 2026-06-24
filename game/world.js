@@ -18,105 +18,55 @@
   };
   OQ.COL = COL;
 
-  // ---- clusters (anchored to page margins; band = vertical 0..1) ----------
-  // dx = px from the anchored edge to the cluster's local origin.
+  // ---- clusters (full-screen layout; band = vertical 0..1, dx = px from anchor) -----
+  // The game has its own page now, so interactive rooms are spread across the WHOLE
+  // floor (left / center / right), not just the side margins.
   const CLUSTERS = {
-    me_desk:    { anchor:'left',  dx: 95,  band: 0.17 },
-    kitchen:      { anchor:'left',  dx: 90,  band: 0.46 },
-    printer_nook: { anchor:'left',  dx: 70,  band: 0.66 },
-    loo:          { anchor:'left',  dx: 80,  band: 0.84 },
-    manager_office: { anchor:'right', dx: 110, band: 0.14 },
-    duck_desk:    { anchor:'right', dx: 80,  band: 0.33 },
-    meeting:      { anchor:'right', dx: 120, band: 0.55 },
-    exit:         { anchor:'right', dx: 60,  band: 0.03 },
-    desk_b:       { anchor:'center', dx:-120, band: 0.52 },
-    desk_c:       { anchor:'center', dx: 130, band: 0.58 },
+    exit:           { anchor:'center', dx:   0, band: 0.02 },  // entrance / elevator (top-center)
+    manager_office: { anchor:'right',  dx: 175, band: 0.11 },  // glass corner office (top-right)
+    me_desk:        { anchor:'left',   dx: 175, band: 0.17 },  // the hero's desk (top-left)
+    duck_desk:      { anchor:'center', dx: 150, band: 0.20 },  // colleague desk w/ the duck (center-top)
+    meeting:        { anchor:'right',  dx: 200, band: 0.34 },  // "Synergy" meeting room (right)
+    desk_b:         { anchor:'center', dx:-260, band: 0.40 },
+    desk_c:         { anchor:'center', dx: 250, band: 0.46 },
+    kitchen:        { anchor:'left',   dx: 185, band: 0.52 },  // kitchenette (mid-left)
+    printer_nook:   { anchor:'center', dx: -30, band: 0.62 },  // printer (center)
+    loo:            { anchor:'left',   dx: 165, band: 0.85 },  // restroom (bottom-left)
   };
 
-  // ---- ambient decor (mostly center column = faint; some in margins = vivid;
-  //      all NON-interactive). Rugs/props flesh out the rooms around interactables.
-  const DECOR = [
-    // rugs under the two key rooms (low band so they depth-sort UNDER the furniture)
-    { prop:'rug',            anchor:'left',   dx: 95,  band:0.145, s:3 },
-    { prop:'rug',            anchor:'right',  dx:110,  band:0.115, s:3 },
-    // top band — open plan + lounge (people working at their desks)
-    { prop:'water_cooler',   anchor:'center', dx:-215, band:0.10, s:3 },
-    { prop:'couch',          anchor:'center', dx: 170, band:0.15, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:-200, band:0.19, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: -70, band:0.20, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:  70, band:0.205, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 200, band:0.21, s:3 },
-    { prop:'plant',          anchor:'center', dx:  10, band:0.245, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:-130, band:0.27, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 130, band:0.275, s:3 },
-    { prop:'arcade',         anchor:'center', dx: -30, band:0.31, s:3 },
-    { prop:'plant',          anchor:'right',  dx:  45, band:0.24, s:3 },
-    { prop:'bookshelf',      anchor:'left',   dx:  32, band:0.30, s:3 },
-    { prop:'whiteboard',     anchor:'center', dx: 150, band:0.33, s:3 },
-    // mid band
-    { prop:'worker_desk',    anchor:'center', dx:-210, band:0.37, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: -60, band:0.375, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 210, band:0.38, s:3 },
-    { prop:'whiteboard',     anchor:'center', dx: -40, band:0.41, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:  90, band:0.43, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:-225, band:0.45, s:3 },
-    { prop:'plant',          anchor:'center', dx:  95, band:0.475, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:-140, band:0.515, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 200, band:0.50, s:3 },
-    { prop:'box_stack',      anchor:'left',   dx: 120, band:0.62, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 130, band:0.575, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: -50, band:0.60, s:3 },
-    { prop:'water_cooler',   anchor:'center', dx: 215, band:0.62, s:3 },
-    { prop:'bookshelf',      anchor:'center', dx:-205, band:0.60, s:3 },
-    // lower band
-    { prop:'worker_desk',    anchor:'center', dx:-160, band:0.66, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 150, band:0.665, s:3 },
-    { prop:'server_rack',    anchor:'center', dx:  60, band:0.70, s:3 },
-    { prop:'box_stack',      anchor:'center', dx: -70, band:0.685, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx:-220, band:0.72, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 215, band:0.725, s:3 },
-    { prop:'plant',          anchor:'center', dx: -90, band:0.75, s:3 },
-    { prop:'couch',          anchor:'center', dx: 120, band:0.79, s:3 },
-    { prop:'plant',          anchor:'right',  dx:  50, band:0.80, s:3 },
-    { prop:'arcade',         anchor:'center', dx: 190, band:0.82, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: -40, band:0.875, s:3 },
-    { prop:'worker_desk',    anchor:'center', dx: 120, band:0.88, s:3 },
-    { prop:'bookshelf',      anchor:'center', dx:-160, band:0.90, s:3 },
-
-    // ===== MARGINS (vivid, NON-interactive) — fill the side strips between the
-    //       interactive clusters so the playable zone never looks empty. An "outer"
-    //       row hugs the wall (small dx) and an "inner" row (larger dx) faces it. =====
-    // LEFT margin
-    { prop:'plant',          anchor:'left',   dx:  40, band:0.07,  s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 200, band:0.10,  s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 185, band:0.27,  s:3 },
-    { prop:'water_cooler',   anchor:'left',   dx:  45, band:0.30,  s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 205, band:0.345, s:3 },
-    { prop:'plant',          anchor:'left',   dx:  55, band:0.38,  s:3 },
-    { prop:'box_stack',      anchor:'left',   dx: 215, band:0.40,  s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 190, band:0.535, s:3 },
-    { prop:'plant',          anchor:'left',   dx:  45, band:0.555, s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 200, band:0.58,  s:3 },
-    { prop:'arcade',         anchor:'left',   dx:  50, band:0.72,  s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 195, band:0.74,  s:3 },
-    { prop:'plant',          anchor:'left',   dx:  60, band:0.77,  s:3 },
-    { prop:'worker_desk',    anchor:'left',   dx: 185, band:0.91,  s:3 },
-    { prop:'server_rack',    anchor:'left',   dx:  55, band:0.94,  s:3 },
-    // RIGHT margin
-    { prop:'plant',          anchor:'right',  dx:  60, band:0.07,  s:3 },
-    { prop:'worker_desk',    anchor:'right',  dx: 185, band:0.205, s:3 },
-    { prop:'worker_desk',    anchor:'right',  dx:  55, band:0.22,  s:3 },
-    { prop:'box_stack',      anchor:'right',  dx: 200, band:0.27,  s:3 },
-    { prop:'water_cooler',   anchor:'right',  dx:  55, band:0.40,  s:3 },
-    { prop:'worker_desk',    anchor:'right',  dx: 195, band:0.42,  s:3 },
-    { prop:'bookshelf',      anchor:'right',  dx:  45, band:0.45,  s:3 },
-    { prop:'worker_desk',    anchor:'right',  dx: 200, band:0.66,  s:3 },
-    { prop:'worker_desk',    anchor:'right',  dx:  55, band:0.685, s:3 },
-    { prop:'plant',          anchor:'right',  dx: 190, band:0.71,  s:3 },
-    { prop:'couch',          anchor:'right',  dx:  65, band:0.84,  s:3 },
-    { prop:'worker_desk',    anchor:'right',  dx: 195, band:0.90,  s:3 },
-    { prop:'arcade',         anchor:'right',  dx:  55, band:0.93,  s:3 },
-  ];
+  // ---- ambient decor (ALL non-interactive). Now full-screen: a generated open-plan
+  //      desk grid spanning the whole floor + lounge/wall props down both edges, so
+  //      no part of the screen looks empty. (Decor is never hit-tested.) ----------
+  const DECOR = [];
+  (function buildDecor() {
+    const push = (prop, anchor, dx, band) => DECOR.push({ prop, anchor, dx, band, s: 3 });
+    // rugs under the two key rooms (low band → depth-sort under the furniture)
+    push('rug', 'left', 175, 0.145); push('rug', 'right', 175, 0.085);
+    // center-anchored interactive clusters to keep desks away from: [dx, band]
+    const AVOID = [[0, 0.02], [150, 0.20], [-260, 0.40], [250, 0.46], [-30, 0.62]];
+    // open-plan desk grid (people working) across the whole floor.
+    // Rows are evenly spaced so NO scroll position ever lands on an empty band.
+    const rows = [0.05, 0.13, 0.21, 0.29, 0.37, 0.45, 0.53, 0.61, 0.69, 0.77, 0.85, 0.93];
+    const cols = [-350, -235, -120, 120, 235, 350];
+    rows.forEach((band, r) => {
+      cols.forEach((dx, c) => {
+        if (AVOID.some(([adx, ab]) => Math.abs(band - ab) < 0.05 && Math.abs(dx - adx) < 125)) return;
+        const k = r * 6 + c;
+        if (k % 7 === 3) push('plant', 'center', dx, band);
+        else if (k % 13 === 6) return;                 // occasional empty floor spot
+        else push('worker_desk', 'center', dx, band + (c % 2) * 0.012);
+      });
+    });
+    // lounge / wall props down both edges + a few big set pieces
+    const edge = [
+      ['plant', 'left', 45, 0.06], ['water_cooler', 'left', 50, 0.30], ['bookshelf', 'left', 45, 0.40],
+      ['box_stack', 'left', 55, 0.66], ['arcade', 'left', 50, 0.74], ['couch', 'left', 60, 0.92], ['server_rack', 'left', 55, 0.97],
+      ['plant', 'right', 55, 0.05], ['couch', 'right', 65, 0.24], ['water_cooler', 'right', 50, 0.44],
+      ['box_stack', 'right', 55, 0.58], ['plant', 'right', 60, 0.70], ['bookshelf', 'right', 45, 0.80], ['arcade', 'right', 55, 0.95],
+      ['whiteboard', 'center', 345, 0.30], ['whiteboard', 'center', -345, 0.55], ['server_rack', 'center', 345, 0.66],
+    ];
+    edge.forEach(([prop, anchor, dx, band]) => push(prop, anchor, dx, band));
+  })();
 
   // ---- items (mobile) — appear on the map until collected ----------------
   // ---- props (stationary) — interactable but never picked up -------------

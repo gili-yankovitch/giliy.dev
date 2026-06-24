@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="game/game.css">
     <style>
         :root {
             --neon-blue: #00f3ff;
@@ -309,6 +308,18 @@
             animation: blink 1s infinite;
         }
 
+        /* hidden easter-egg command in the footer terminal */
+        .secret-cmd {
+            color: #14323a;            /* nearly invisible against the dark bg */
+            text-decoration: none;
+            transition: color 0.25s, text-shadow 0.25s;
+            cursor: pointer;
+        }
+        .secret-cmd:hover {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
         .matrix-bg {
             position: fixed;
             top: 0;
@@ -506,7 +517,8 @@
     ╚══════════════════════════════════════════╝
             </div>
             <p style="margin-top: 20px;">
-                <span class="blinking-cursor">root@giliy.dev:~$ </span>
+                <span style="color: var(--neon-green);">root@giliy.dev:~$</span>
+                <a href="game.html" class="secret-cmd" title="...what's this?">./office_quest.sh</a><span class="blinking-cursor"></span>
             </p>
             <div class="visitor-counter">
                 VISITORS: 1337
@@ -532,8 +544,14 @@
     ║   Looking for vulnerabilities? I like you already.   ║
     ║   Send your findings to: giliy@nyxsecurity.net       ║
     ║                                                      ║
+    ║   P.S. there's a hidden game. run launchQuest()      ║
+    ║   ...or find ./office_quest.sh in the footer. 🕹️     ║
+    ║                                                      ║
     ╚══════════════════════════════════════════════════════╝
         `);
+
+        // Easter egg: launch the hidden point-&-click adventure
+        window.launchQuest = function () { window.location.href = 'game.html'; };
 
         // Fake visitor counter that updates
         const counter = document.querySelector('.visitor-counter');
@@ -543,12 +561,6 @@
             counter.textContent = `VISITORS: ${baseVisitors + randomAdd}`;
         }
     </script>
-
-    <!-- ====== OFFICE QUEST: hidden point-&-click adventure in the background ====== -->
-    <!-- See game/DESIGN.md. Loaded in order: sprites -> world -> engine. -->
-    <script src="game/sprites.js"></script>
-    <script src="game/world.js"></script>
-    <script src="game/engine.js"></script>
 </body>
 </html>
 

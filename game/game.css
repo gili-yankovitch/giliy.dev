@@ -1,0 +1,152 @@
+/* ============================================================================
+ * OFFICE QUEST — game.css
+ * Canvas layering ("play in the margins"), HUD, speech bubbles, win overlay.
+ * ==========================================================================*/
+
+#oq-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;            /* below content, above body background */
+  display: block;
+}
+
+/* The site content sits above the game. Gaps let clicks fall THROUGH to the
+   canvas; actual panels/links capture clicks (so the game is NOT interactive
+   behind content) — exactly the brief's rule. */
+body > .container {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+body > .container .section,
+body > .container .header,
+body > .container .footer,
+body > .container a,
+body > .container .marquee {
+  pointer-events: auto;
+}
+
+/* Click catcher: only visible while dialogue/cutscene is playing, so a click
+   anywhere advances and doesn't accidentally hit page links. */
+#oq-catcher {
+  position: fixed; inset: 0; z-index: 1450; display: none;
+  cursor: pointer;
+}
+#oq-catcher.on { display: block; }
+
+/* Speech bubbles (comic style) */
+.oq-bubble {
+  position: fixed; z-index: 1500; max-width: 280px; min-width: 70px;
+  transform: translate(-50%, -100%);
+  background: #0c0c1c; color: #ececf4;
+  border: 2px solid var(--oq-col, #00f3ff);
+  box-shadow: 0 0 10px var(--oq-col, #00f3ff), inset 0 0 8px rgba(0,0,0,.6);
+  padding: 8px 11px; border-radius: 3px;
+  font-family: 'VT323', monospace; font-size: 1.15rem; line-height: 1.15;
+  pointer-events: none; text-shadow: 0 0 4px rgba(0,0,0,.8);
+  image-rendering: pixelated; animation: oq-pop .12s ease-out;
+}
+.oq-bubble .oq-name {
+  display: block; font-family: 'Press Start 2P', cursive; font-size: .55rem;
+  color: var(--oq-col, #00f3ff); margin-bottom: 5px; letter-spacing: 1px;
+}
+.oq-bubble.squeak { font-style: italic; letter-spacing: .5px; }
+.oq-bubble::after {  /* little tail */
+  content: ""; position: absolute; left: 28px; bottom: -9px;
+  border-width: 9px 8px 0 0; border-style: solid;
+  border-color: var(--oq-col, #00f3ff) transparent transparent transparent;
+}
+.oq-bubble .oq-more { float: right; color: var(--oq-col,#00f3ff); opacity:.7; margin-left:6px; }
+@keyframes oq-pop { from { transform: translate(-50%, -100%) scale(.6); opacity:0; } }
+
+/* Status sentence bar */
+#oq-status {
+  position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%);
+  z-index: 1400; pointer-events: none; min-height: 1.2em;
+  font-family: 'VT323', monospace; font-size: 1.25rem; color: #9ff7ff;
+  text-shadow: 0 0 6px #00f3ff, 0 0 2px #000; letter-spacing: 1px;
+  white-space: nowrap;
+}
+#oq-status .oq-verb { color: #ff4df0; text-shadow: 0 0 6px #ff4df0; }
+
+/* Inventory bar */
+#oq-inv {
+  position: fixed; left: 12px; bottom: 10px; z-index: 1460;
+  display: flex; gap: 6px; align-items: flex-end; pointer-events: auto;
+}
+#oq-inv .oq-slot {
+  width: 46px; height: 46px; background: rgba(8,10,24,.82);
+  border: 1px solid #1f7a8c; box-shadow: inset 0 0 6px rgba(0,243,255,.12);
+  position: relative; cursor: pointer; image-rendering: pixelated;
+}
+#oq-inv .oq-slot:hover { border-color: #00f3ff; box-shadow: 0 0 8px #00f3ff; }
+#oq-inv .oq-slot.held { border-color: #ff4df0; box-shadow: 0 0 10px #ff4df0; }
+#oq-inv .oq-slot canvas { width: 100%; height: 100%; display: block; }
+#oq-invlabel {
+  position: fixed; left: 12px; bottom: 60px; z-index: 1460; pointer-events: none;
+  font-family: 'Press Start 2P', cursive; font-size: .5rem; color: #39ff14;
+  text-shadow: 0 0 6px #39ff14; opacity: .85;
+}
+
+/* Focus meter */
+#oq-focuswrap {
+  position: fixed; right: 12px; bottom: 12px; z-index: 1460; pointer-events: none;
+  font-family: 'Press Start 2P', cursive; font-size: .5rem; color: #00f3ff;
+  text-align: right; text-shadow: 0 0 6px #00f3ff;
+}
+#oq-focusbar {
+  width: 150px; height: 12px; margin-top: 5px; background: #0a0a1a;
+  border: 1px solid #1f7a8c; box-shadow: inset 0 0 5px rgba(0,243,255,.2);
+}
+#oq-focusfill {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, #ff4df0, #00f3ff);
+  box-shadow: 0 0 8px #00f3ff; transition: width .35s ease;
+}
+
+/* Intro / toast hints */
+.oq-toast {
+  position: fixed; left: 50%; top: 18px; transform: translateX(-50%);
+  z-index: 1500; pointer-events: none; max-width: 90vw; text-align: center;
+  background: rgba(8,10,24,.9); border: 1px solid #ff4df0;
+  box-shadow: 0 0 10px #ff4df0; color: #ececf4; padding: 9px 16px;
+  font-family: 'VT323', monospace; font-size: 1.15rem; letter-spacing: .5px;
+  transition: opacity .5s ease; border-radius: 3px;
+}
+
+/* Win overlay */
+#oq-overlay {
+  position: fixed; inset: 0; z-index: 1600; display: none;
+  align-items: center; justify-content: center; pointer-events: auto;
+  background: radial-gradient(ellipse at center, rgba(10,10,30,.55), rgba(3,3,12,.88));
+  animation: oq-fadein .6s ease;
+}
+#oq-overlay.on { display: flex; }
+#oq-overlay .oq-card {
+  text-align: center; border: 2px solid #00f3ff; background: rgba(8,10,24,.92);
+  box-shadow: 0 0 25px #00f3ff, inset 0 0 18px rgba(0,243,255,.12);
+  padding: 30px 34px; max-width: 520px;
+}
+#oq-overlay h2 {
+  font-family: 'Press Start 2P', cursive; color: #39ff14; font-size: 1.1rem;
+  text-shadow: 0 0 12px #39ff14; margin-bottom: 14px;
+}
+#oq-overlay .oq-path {
+  font-family: 'Press Start 2P', cursive; color: #ff4df0; font-size: .7rem;
+  text-shadow: 0 0 10px #ff4df0; margin-bottom: 18px; line-height: 1.6;
+}
+#oq-overlay p { font-family: 'VT323', monospace; color: #ececf4; font-size: 1.3rem; line-height: 1.3; }
+#oq-overlay button {
+  margin-top: 22px; font-family: 'Press Start 2P', cursive; font-size: .6rem;
+  color: #0a0a1a; background: #00f3ff; border: none; padding: 12px 20px;
+  cursor: pointer; box-shadow: 0 0 12px #00f3ff; pointer-events: auto;
+}
+#oq-overlay button:hover { background: #ff4df0; box-shadow: 0 0 12px #ff4df0; }
+@keyframes oq-fadein { from { opacity: 0; } }
+
+@media (max-width: 760px) {
+  #oq-status { font-size: 1rem; white-space: normal; max-width: 92vw; text-align: center; }
+  .oq-bubble { font-size: 1rem; max-width: 200px; }
+}
